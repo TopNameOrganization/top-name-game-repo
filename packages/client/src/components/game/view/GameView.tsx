@@ -5,9 +5,9 @@ import { RunnerAction, TileSize, Tile } from '../constants'
 import GameModel from '../model/GameModel'
 import {
   ModelEvents,
-  PlayerInfoType,
-  LevelType,
+  RunnerInfoType,
   PositionType,
+  LevelMapType,
   MessageType,
   ModelMessageType,
 } from '../model'
@@ -18,6 +18,7 @@ import { PauseActions } from './pauseActions'
 import { Sprite } from './sprite'
 import { tileCfg } from './spriteConfigs'
 import { playerCfg } from './spriteConfigs'
+import { enemyCfg } from './spriteConfigs'
 
 const width = 32 * TileSize
 const height = 22 * TileSize
@@ -27,34 +28,46 @@ export const GameView = () => {
   const [score, setScore] = useState<number>(0)
   const [rest, setRest] = useState<number>(0)
   const [message, setMessage] = useState<MessageScreenProps | null>(null)
+  // const [enemySprites, setEnemySprites] = useState<Array<Sprite>>([]);
 
   const worldRef = useRef<HTMLCanvasElement>(null)
   const actorsRef = useRef<HTMLCanvasElement>(null)
 
   const tileSpr = new Sprite(tileCfg)
   const playerSpr = new Sprite(playerCfg)
+  const enemySprites: Array<Sprite> = []
 
   const updateWorld = ({
     level,
     burn,
+    enemies,
   }: {
-    level?: LevelType
+    level?: LevelMapType
     burn?: PositionType
+    enemies?: number
   }) => {
     const ctx = worldRef.current?.getContext('2d')
     if (ctx) {
       if (level) {
         ctx.fillStyle = '#000000'
         ctx.fillRect(0, 0, width, height)
-      }
-      level?.map((item, y) => {
-        item.map((tile, x) => {
-          if (![Tile.Empty, Tile.Player, Tile.Enemy].includes(tile)) {
-            const src = tileSpr.getPhase(0, tile)
-            ctx.drawImage(tileSpr.getPhase(0, tile), x * TileSize, y * TileSize)
-          }
+        level?.map((item, y) => {
+          item.map((tile, x) => {
+            if (![Tile.Empty, Tile.Player, Tile.Enemy].includes(tile)) {
+              ctx.drawImage(
+                tileSpr.getPhase(0, tile),
+                x * TileSize,
+                y * TileSize
+              )
+            }
+          })
         })
-      })
+      }
+      if (enemies && enemies > 0) {
+        while (enemySprites.length < enemies) {
+          enemySprites.push(new Sprite(enemyCfg))
+        }
+      }
       if (burn) {
         const { x, y } = burn
         ctx.fillStyle = 'black'
@@ -63,14 +76,24 @@ export const GameView = () => {
     }
   }
 
-  const drawFrame = (data: { dTime: number; player: PlayerInfoType }) => {
+  const drawFrame = (data: {
+    dTime: number
+    player: RunnerInfoType
+    enemies: Array<RunnerInfoType>
+  }) => {
     const ctx = actorsRef.current?.getContext('2d')
     if (ctx) {
       ctx.clearRect(0, 0, width, height)
-      const { player, dTime } = data
+      const { player, enemies, dTime } = data
       if (player) {
         const { x, y, phase, direction } = player
         ctx.drawImage(playerSpr.getPhase(dTime, phase, direction), x, y)
+      }
+      if (enemies.length > 0) {
+        enemies.map((runner, i) => {
+          const { x, y, phase, direction } = runner
+          ctx.drawImage(enemySprites[i].getPhase(dTime, phase, direction), x, y)
+        })
       }
     }
   }
