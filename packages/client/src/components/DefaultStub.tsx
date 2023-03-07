@@ -31,7 +31,7 @@ export const DefaultStub = ({
         {action || (
           <Button
             component={RouterLink}
-            to={ROUTES.root}
+            to={ROUTES.home}
             variant="contained"
             sx={{ mt: 1 }}>
             Back Home

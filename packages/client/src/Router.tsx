@@ -7,7 +7,7 @@ import * as Pages from './pages'
 export const Router = () => {
   return (
     <Routes>
-      <Route path={ROUTES.root} element={<Pages.RootPage />} />
+      <Route path={ROUTES.home} element={<Pages.HomePage />} />
       <Route element={<PublicRoutes />}>
         <Route path={ROUTES.login} element={<Pages.SignInPage />} />
         <Route path={ROUTES.signup} element={<Pages.SignUpPage />} />

@@ -26,7 +26,7 @@ export const GeneralLayout = ({ children }: { children: React.ReactNode }) => {
             variant="h6"
             color="inherit"
             component={Link}
-            to={ROUTES.root}
+            to={ROUTES.home}
             sx={{ textDecoration: 'none' }}>
             Lode runner
           </Typography>

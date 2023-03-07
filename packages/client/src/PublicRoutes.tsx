@@ -11,7 +11,7 @@ export const PublicRoutes = () => {
   }
 
   if (auth.user.data) {
-    return <Navigate to={ROUTES.root} replace />
+    return <Navigate to={ROUTES.home} replace />
   }
 
   return <Outlet />
