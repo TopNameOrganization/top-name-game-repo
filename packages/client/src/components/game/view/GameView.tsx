@@ -5,9 +5,9 @@ import { RunnerAction, TileSize, Tile } from '../constants'
 import GameModel from '../model/GameModel'
 import {
   ModelEvents,
-  PlayerInfoType,
-  LevelType,
+  RunnerInfoType,
   PositionType,
+  LevelMapType,
   MessageType,
   ModelMessageType,
 } from '../model'
@@ -18,6 +18,8 @@ import { PauseActions } from './pauseActions'
 import { Sprite } from './sprite'
 import { tileCfg } from './spriteConfigs'
 import { playerCfg } from './spriteConfigs'
+import { enemyCfg } from './spriteConfigs'
+import { checkNode } from '../model/agent'
 
 const width = 32 * TileSize
 const height = 22 * TileSize
@@ -33,28 +35,55 @@ export const GameView = () => {
 
   const tileSpr = new Sprite(tileCfg)
   const playerSpr = new Sprite(playerCfg)
+  const enemySprites: Array<Sprite> = []
 
   const updateWorld = ({
     level,
     burn,
+    enemies,
   }: {
-    level?: LevelType
+    level?: LevelMapType
     burn?: PositionType
+    enemies?: number
   }) => {
     const ctx = worldRef.current?.getContext('2d')
     if (ctx) {
       if (level) {
         ctx.fillStyle = '#000000'
         ctx.fillRect(0, 0, width, height)
-      }
-      level?.map((item, y) => {
-        item.map((tile, x) => {
-          if (![Tile.Empty, Tile.Player, Tile.Enemy].includes(tile)) {
-            const src = tileSpr.getPhase(0, tile)
-            ctx.drawImage(tileSpr.getPhase(0, tile), x * TileSize, y * TileSize)
-          }
+        level?.forEach((item, y) => {
+          item.forEach((tile, x) => {
+            if (![Tile.Empty, Tile.Player, Tile.Enemy].includes(tile)) {
+              ctx.drawImage(
+                tileSpr.getPhase(0, tile),
+                x * TileSize,
+                y * TileSize
+              )
+            }
+
+            // const dirs = checkNode({ x, y })
+            // if (dirs.length > 0) {
+            //   ctx.strokeStyle = 'lightgreen'
+            //   ctx.lineWidth = 2
+            //   ctx.strokeRect(x * TileSize, y * TileSize, TileSize, TileSize)
+
+            //   const mid = { x: (x + 0.5) * TileSize, y: (y + 0.5) * TileSize }
+            //   dirs.forEach(dir => {
+            //     const a = RunnerAction.MoveLeft - dir
+            //     const xx = mid.x - TileSize * 0.3 * Math.cos((a * Math.PI) / 2)
+            //     const yy = mid.y + TileSize * 0.3 * Math.sin((a * Math.PI) / 2)
+            //     ctx.fillStyle = 'green'
+            //     ctx.fillRect(xx - 3, yy - 3, 6, 6)
+            //   })
+            // }
+          })
         })
-      })
+      }
+      if (enemies && enemies > 0) {
+        while (enemySprites.length < enemies) {
+          enemySprites.push(new Sprite(enemyCfg))
+        }
+      }
       if (burn) {
         const { x, y } = burn
         ctx.fillStyle = 'black'
@@ -63,14 +92,24 @@ export const GameView = () => {
     }
   }
 
-  const drawFrame = (data: { dTime: number; player: PlayerInfoType }) => {
+  const drawFrame = (data: {
+    dTime: number
+    player: RunnerInfoType
+    enemies: Array<RunnerInfoType>
+  }) => {
     const ctx = actorsRef.current?.getContext('2d')
     if (ctx) {
       ctx.clearRect(0, 0, width, height)
-      const { player, dTime } = data
+      const { player, enemies, dTime } = data
       if (player) {
         const { x, y, phase, direction } = player
         ctx.drawImage(playerSpr.getPhase(dTime, phase, direction), x, y)
+      }
+      if (enemies.length > 0) {
+        enemies.map((runner, i) => {
+          const { x, y, phase, direction } = runner
+          ctx.drawImage(enemySprites[i].getPhase(dTime, phase, direction), x, y)
+        })
       }
     }
   }

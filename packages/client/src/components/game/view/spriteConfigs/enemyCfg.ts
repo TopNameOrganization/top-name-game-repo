@@ -1,10 +1,10 @@
 import { AnimationPhase } from '../../constants'
-import runnerImg from '../../../../assets/game/player.png';
+import enemyImg from '../../../../assets/game/enemy.png';
 
 const img = new Image();
-img.src = runnerImg;
+img.src = enemyImg;
 
-export const playerCfg = {
+export const enemyCfg = {
   img,
   fps: 30,
   phases: {

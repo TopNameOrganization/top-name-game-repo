@@ -5,18 +5,27 @@ export type PositionType = {
   y: number,
 };
 
-export type SizeType = {
-  width: number,
-  height: number,
-};
+export type CheckCollisionType = {
+  position: PositionType,
+  phase: AnimationPhase,
+  isEnd: boolean,
+}
 
-export type PlayerInfoType = PositionType & {
+export type RunnerInfoType = PositionType & {
   phase: AnimationPhase,
   direction: number,
 };
 
-export type LevelType = Tile[][];
+export type LevelMapType = Tile[][];
 
+export type LevelType = {
+  level: LevelMapType,
+  player: PositionType,
+  bonuses: number,
+  enemies: Array<PositionType>,
+}
+
+// TODO: всё кроме Update - это неточно
 export enum ModelEvents {
   Update = 'update',
   UpdateWorld = 'updateWorld',
