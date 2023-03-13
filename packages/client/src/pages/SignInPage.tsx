@@ -4,6 +4,7 @@ import { Link as RouterLink } from 'react-router-dom'
 import { SignInForm } from '../components/signIn'
 import { LoginLayout } from '../layouts'
 import { ROUTES } from '../constants'
+import { SingInWithYandex } from "../components/signInWithYandex/SingInWithYandex";
 
 export function SignInPage() {
   return (
@@ -17,6 +18,11 @@ export function SignInPage() {
           <Link component={RouterLink} to={ROUTES.signup} variant="body2">
             {"Don't have an account? Sign Up"}
           </Link>
+        </Grid>
+      </Grid>
+      <Grid container justifyContent="center">
+        <Grid item>
+          <SingInWithYandex />
         </Grid>
       </Grid>
     </LoginLayout>

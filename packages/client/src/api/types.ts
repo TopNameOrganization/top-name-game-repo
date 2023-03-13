@@ -43,3 +43,12 @@ export interface LeaderData {
   score: number,
   level: number,
 }
+
+export interface OAuthData {
+  code: string,
+  redirect_uri: string
+}
+
+export interface serviceIdData {
+  service_id: string
+}

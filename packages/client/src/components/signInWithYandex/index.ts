@@ -1,0 +1,1 @@
+export { SingInWithYandex } from './SingInWithYandex'
